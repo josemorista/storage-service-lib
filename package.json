@@ -9,7 +9,14 @@
     "prebuild": "npm run clear",
     "prepublishOnly": "npm run build"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/josemorista/storage-service-lib.git"
+  },
+  "keywords": [
+    "storage",
+    "s3"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
