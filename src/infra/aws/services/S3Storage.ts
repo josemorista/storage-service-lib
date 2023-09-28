@@ -4,11 +4,7 @@ import { File } from '../../../entities/File';
 import { Storage } from '../../../services/Storage';
 
 export class S3Storage extends Storage {
-  constructor(
-    readonly options: ConstructorParameters<typeof S3>[0],
-    readonly bucket: string,
-    readonly acl = 'public-read'
-  ) {
+  constructor(readonly options: ConstructorParameters<typeof S3>[0], readonly bucket: string, readonly acl?: string) {
     super();
   }
 
