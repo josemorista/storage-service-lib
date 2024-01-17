@@ -14,7 +14,7 @@ on:
 jobs:
   create-release:
     runs-on: 'ubuntu-latest'
-    name: 'bump'
+    name: 'Bump & push'
     steps:
       - uses: actions/checkout@v3
         with:
@@ -28,5 +28,5 @@ jobs:
           node-version: 20
       - name: 'Bump version'
         run: |
-          'npm version ${{ github.events.inputs.bump }}'
+          npm version ${{ github.events.inputs.bump }}
           git push && git push --tags
