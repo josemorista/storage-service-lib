@@ -28,5 +28,6 @@ jobs:
           node-version: 20
       - name: 'Bump version'
         run: |
-          npm version ${{ github.events.inputs.bump }}
-          git push && git push --tags
+          npm version ${{github.event.inputs.bump}}
+          git push 
+          git push --tags
