@@ -7,7 +7,7 @@
     "build": "tsc",
     "clear": "rm -rf ./lib",
     "prebuild": "npm run clear",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm ci && npm run build"
   },
   "repository": {
     "type": "git",
