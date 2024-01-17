@@ -17,4 +17,7 @@ jobs:
         run: |
           echo 'registry=https://registry.npmjs.org/' >> .npmrc
           echo "//registry.npmjs.org/:_auth=${{secrets.NPM_AUTH_TOKEN}}" >> .npmrc
-          echo "email=${{secrets.NPM_EMAIL}}" >> .npmrc
+          echo '//registry.npmjs.org/:always-auth=true' >> .npmrc
+      - name: 'publish'
+        run: |
+          npm publish
