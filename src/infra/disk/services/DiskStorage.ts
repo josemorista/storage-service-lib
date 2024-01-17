@@ -1,14 +1,23 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { Storage } from '../../../services/Storage';
+import { SaveInput, Storage } from '../../../services/Storage';
+import { createWriteStream } from 'fs';
+import { Readable } from 'stream';
 
 export class DiskStorage extends Storage {
   constructor(readonly uploadsPath: string) {
     super();
   }
 
-  async putInStorage(key: string, location: string): Promise<void> {
-    await fs.copyFile(location, path.join(this.uploadsPath, key));
+  async putFromFs(input: SaveInput, pathInTmpFolder: string): Promise<void> {
+    await fs.copyFile(pathInTmpFolder, path.join(this.uploadsPath, input.key));
+  }
+
+  putFromStream(input: SaveInput, stream: Readable): Promise<void> {
+    const wStream = createWriteStream(path.join(this.uploadsPath, input.key));
+    return new Promise<void>((resolve, reject) => {
+      stream.pipe(wStream).on('close', resolve).on('error', reject);
+    });
   }
 
   async delete(key: string): Promise<void> {

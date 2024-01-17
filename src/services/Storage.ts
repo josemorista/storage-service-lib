@@ -1,16 +1,26 @@
 import { unlink } from 'fs/promises';
-import { join } from 'path';
+import { Readable } from 'stream';
+
+export interface SaveInput {
+  filename: string;
+  key: string;
+  mimetype: string;
+}
 
 export abstract class Storage {
+  protected abstract putFromFs(key: SaveInput, path: string): Promise<void>;
+  protected abstract putFromStream(key: SaveInput, stream: Readable): Promise<void>;
   abstract delete(key: string): Promise<void>;
-  protected abstract putInStorage(key: string, path: string): Promise<void>;
 
-  async save(key: string, path: string): Promise<void> {
-    const pathInTmpFolder = join(path, key);
+  async saveFromFs(file: SaveInput, pathInTmpFolder: string): Promise<void> {
     try {
-      await this.putInStorage(key, pathInTmpFolder);
+      await this.putFromFs(file, pathInTmpFolder);
     } finally {
       unlink(pathInTmpFolder).catch(console.error);
     }
+  }
+
+  saveFromStream(file: SaveInput, stream: Readable) {
+    return this.putFromStream(file, stream);
   }
 }

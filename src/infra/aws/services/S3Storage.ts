@@ -1,10 +1,10 @@
-import { S3 } from 'aws-sdk';
+import { ObjectCannedACL, S3, S3ClientConfig } from '@aws-sdk/client-s3';
+import { SaveInput, Storage } from '../../../services/Storage';
+import { Readable } from 'stream';
 import fs from 'fs';
-import { File } from '../../../entities/File';
-import { Storage } from '../../../services/Storage';
 
 export class S3Storage extends Storage {
-  constructor(readonly options: ConstructorParameters<typeof S3>[0], readonly bucket: string, readonly acl?: string) {
+  constructor(readonly options: S3ClientConfig, readonly bucket: string, readonly acl?: ObjectCannedACL) {
     super();
   }
 
@@ -12,24 +12,30 @@ export class S3Storage extends Storage {
     return new S3(this.options);
   }
 
-  async putInStorage(key: string, path: string): Promise<void> {
-    await this.s3
-      .putObject({
-        Bucket: this.bucket,
-        Key: key,
-        Body: fs.createReadStream(path),
-        ACL: this.acl,
-        ContentType: new File(key).getContentType(),
-      })
-      .promise();
+  async putFromFs(input: SaveInput, pathInTmpFolder: string): Promise<void> {
+    await this.s3.putObject({
+      Bucket: this.bucket,
+      Key: input.key,
+      Body: fs.createReadStream(pathInTmpFolder),
+      ACL: this.acl,
+      ContentType: input.mimetype,
+    });
+  }
+
+  async putFromStream(input: SaveInput, stream: Readable): Promise<void> {
+    await this.s3.putObject({
+      Bucket: this.bucket,
+      Key: input.key,
+      Body: stream,
+      ACL: this.acl,
+      ContentType: input.mimetype,
+    });
   }
 
   async delete(key: string): Promise<void> {
-    await this.s3
-      .deleteObject({
-        Bucket: this.bucket,
-        Key: key,
-      })
-      .promise();
+    await this.s3.deleteObject({
+      Bucket: this.bucket,
+      Key: key,
+    });
   }
 }
