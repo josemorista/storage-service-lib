@@ -13,11 +13,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-      - name: 'npm login'
-        run: |
-          echo 'registry=https://registry.npmjs.org/' >> .npmrc
-          echo "//registry.npmjs.org/:_auth=${{secrets.NPM_AUTH_TOKEN}}" >> .npmrc
-          echo '//registry.npmjs.org/:always-auth=true' >> .npmrc
       - name: 'publish'
         run: |
+          npm config set "//registry.npmjs.org/:_authToken=${{secrets.NPM_AUTH_TOKEN}}"
           npm publish
