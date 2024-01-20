@@ -1,4 +1,5 @@
 import { ObjectCannedACL, S3, S3ClientConfig } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { SaveInput, Storage } from '../../../services/Storage';
 import { Readable } from 'stream';
 import fs from 'fs';
@@ -23,13 +24,17 @@ export class S3Storage extends Storage {
   }
 
   async putFromStream(input: SaveInput, stream: Readable): Promise<void> {
-    await this.s3.putObject({
-      Bucket: this.bucket,
-      Key: input.key,
-      Body: stream,
-      ACL: this.acl,
-      ContentType: input.mimetype,
+    const upload = new Upload({
+      client: this.s3,
+      params: {
+        Bucket: this.bucket,
+        ACL: this.acl,
+        ContentType: input.mimetype,
+        Key: input.key,
+        Body: stream,
+      },
     });
+    await upload.done();
   }
 
   async delete(key: string): Promise<void> {
